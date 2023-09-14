@@ -152,9 +152,22 @@ export const mainRouter = createTRPCRouter({
     });
   }),
   getSuperhero: publicProcedure.query(async ({ ctx }) => {
-    const result =  await ctx.db.superhero.findMany({
+    const result = await ctx.db.superhero.findMany({
       include: { images: true, superpowers: true },
     });
-    return result
+    return result;
   }),
+  getHeroById: publicProcedure
+    .input(z.number())
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.superhero.findFirst({
+        where: {
+          id: input,
+        },
+        include: {
+          images: true,
+          superpowers: true,
+        },
+      });
+    }),
 });

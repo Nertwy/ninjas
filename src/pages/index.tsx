@@ -26,7 +26,7 @@ export default function Home() {
             onClick={() => {
               void router.push({
                 pathname: "SuperHero",
-                query: { hero: JSON.stringify(item) },
+                query: { id: item.id.toString() },
               });
             }}
           >

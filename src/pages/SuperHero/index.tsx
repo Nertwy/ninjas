@@ -2,13 +2,26 @@ import { type FullHero } from "types";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
-import { ChangeEvent, FC, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
+import OnNoEdit from "./OnNoEdit";
+import { type NextPage } from "next";
 
-const HeroPage = () => {
+const HeroPage: NextPage = () => {
   const router = useRouter();
-  const { hero } = router.query;
-  const ParsedHero: FullHero = JSON.parse(hero as string) as FullHero;
-  const [HeroInfo, setHeroInfo] = useState<FullHero>(ParsedHero);
+  const { id } = router.query;
+  const { data, isFetched } = api.main.getHeroById.useQuery(55);
+  useEffect(() => {
+    setHeroInfo((prev) => data ?? prev);
+  }, [isFetched]);
+  const [HeroInfo, setHeroInfo] = useState<FullHero>({
+    id: 0,
+    catch_phrase: "",
+    images: [],
+    nickname: "",
+    origin_description: "",
+    real_name: "",
+    superpowers: [],
+  });
   const [edit, setEdit] = useState(false);
   const deleteHero = api.main.deleteSuperhero.useMutation();
   const handleDelete = (id: number) => {
@@ -166,7 +179,7 @@ const HeroPage = () => {
               <button
                 className="btn btn-primary"
                 onClick={() => {
-                  setHeroInfo(ParsedHero);
+                  setHeroInfo(data ?? HeroInfo);
                   setEdit(false);
                 }}
               >
@@ -218,37 +231,5 @@ const HeroPage = () => {
     </div>
   );
 };
-const OnNoEdit: FC<{ HeroInfo: FullHero }> = ({ HeroInfo }) => {
-  return (
-    <div className="card mt-4 w-96 bg-base-100 shadow-xl">
-      <div className="card-body">
-        <h2 className="card-title text-white">Hero Description</h2>
-        <p>
-          <b>Hero nickname: </b>
-          {HeroInfo.nickname}
-        </p>
-        <p>
-          <b>Hero real name: </b>
-          {HeroInfo.real_name}
-        </p>
-        <p>
-          <b>Hero catch phrase: </b>
-          {HeroInfo.catch_phrase}
-        </p>
-        <p>
-          <b>Hero description: </b>
-          <p>{HeroInfo.origin_description}</p>
-        </p>
-        <p>
-          <b>Hero SuperPowers: </b>
-          {HeroInfo.superpowers
-            .map((superpower) => {
-              return superpower.description;
-            })
-            .join(", ")}
-        </p>
-      </div>
-    </div>
-  );
-};
+
 export default HeroPage;
