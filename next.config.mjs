@@ -8,6 +8,23 @@ await import("./src/env.mjs");
 const config = {
   reactStrictMode: true,
 
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        pathname: "/**",
+        hostname: "example.com",
+        port: "",
+      },
+      {
+        protocol: "https",
+        pathname: "/**",
+        hostname: "cdn.jsdelivr.net",
+        port: "",
+      },
+      
+    ],
+  },
   /**
    * If you are using `appDir` then you must comment the below `i18n` config out.
    *
