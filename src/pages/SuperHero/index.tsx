@@ -9,10 +9,7 @@ import { type NextPage } from "next";
 const HeroPage: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { data, isFetched } = api.main.getHeroById.useQuery(55);
-  useEffect(() => {
-    setHeroInfo((prev) => data ?? prev);
-  }, [isFetched]);
+
   const [HeroInfo, setHeroInfo] = useState<FullHero>({
     id: 0,
     catch_phrase: "",
@@ -23,6 +20,12 @@ const HeroPage: NextPage = () => {
     superpowers: [],
   });
   const [edit, setEdit] = useState(false);
+  const { data, isFetched } = api.main.getHeroById.useQuery(
+    parseInt(id as string),
+  );
+  useEffect(() => {
+    setHeroInfo((prev) => data ?? prev);
+  }, [isFetched]);
   const deleteHero = api.main.deleteSuperhero.useMutation();
   const handleDelete = (id: number) => {
     deleteHero.mutate(id, {
