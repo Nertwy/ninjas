@@ -1,4 +1,4 @@
-import { useState, type FC, type ChangeEvent } from "react";
+import { useState, type FC, type ChangeEvent} from "react";
 
 type Props = {
   changeHeroSupers: (supers: string[]) => void;
@@ -6,23 +6,24 @@ type Props = {
 };
 const GrowingInput: FC<Props> = ({ defaultValues, changeHeroSupers }) => {
   const [inputs, setInputs] = useState<string[]>(defaultValues ?? []);
+
   const handleChange = (index: number, e: ChangeEvent<HTMLInputElement>) => {
     const newInputs = [...inputs];
     newInputs[index] = e.currentTarget.value;
     setInputs(newInputs);
-    changeHeroSupers(inputs);
+    changeHeroSupers(newInputs);
   };
   const handleAdd = (index: number) => {
     const newInputs = [...inputs];
     newInputs.splice(index + 1, 0, "");
     setInputs(newInputs);
-    changeHeroSupers(inputs);
+    changeHeroSupers(newInputs);
   };
   const handleDetele = (index: number) => {
     const newInputs = [...inputs];
     newInputs.splice(index, 1);
     setInputs(newInputs);
-    changeHeroSupers(inputs);
+    changeHeroSupers(newInputs);
   };
   return (
     <>

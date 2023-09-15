@@ -10,20 +10,23 @@ import GrowingInput from "../components/GrowingInput";
 const HeroPage: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const [HeroInfo, setHeroInfo] = useState<FullHero>({
-    id: 0,
-    catch_phrase: "",
-    images: [],
-    nickname: "",
-    origin_description: "",
-    real_name: "",
-    superpowers: [],
-  });
   const updateHero = api.main.updateHero.useMutation();
   const [edit, setEdit] = useState(false);
-  const { data, isFetched } = api.main.getHeroById.useQuery(
+  const { data, isFetched, refetch } = api.main.getHeroById.useQuery(
     parseInt(id as string),
   );
+  const [HeroInfo, setHeroInfo] = useState<FullHero>(
+    data ?? {
+      id: 0,
+      catch_phrase: "",
+      images: [],
+      nickname: "",
+      origin_description: "",
+      real_name: "",
+      superpowers: [],
+    },
+  );
+  const [imageUrl, setImageUrl] = useState<string>("");
   useEffect(() => {
     setHeroInfo((prev) => data ?? prev);
   }, [isFetched]);
@@ -42,12 +45,14 @@ const HeroPage: NextPage = () => {
   };
   const handleSuperChange = (superpowers: string[]) => {
     setHeroInfo((prev) => {
-      return {
+      const res = {
         ...prev,
         superpowers: superpowers.map((item) => {
           return { description: item, superheroId: prev.id, id: -1 };
         }),
       };
+
+      return res;
     });
   };
   const handleChange = (
@@ -58,24 +63,27 @@ const HeroPage: NextPage = () => {
     setHeroInfo(updatedHeroInfo);
   };
   const handleAddImage = (url: string) => {
-    setHeroInfo({
-      ...HeroInfo,
-      images: [...HeroInfo.images, { url, superheroId: HeroInfo.id, id: 0 }],
+    setHeroInfo((prev) => {
+      return {
+        ...prev,
+        images: [...HeroInfo.images, { url, superheroId: HeroInfo.id, id: 0 }],
+      };
     });
   };
   const handleDeleteImage = (index_to_delete: number) => {
-    setHeroInfo({
-      ...HeroInfo,
-      images: HeroInfo.images.filter((image, index) => {
-        return index !== index_to_delete;
-      }),
+    setHeroInfo((prev) => {
+      return {
+        ...prev,
+        images: HeroInfo.images.filter((image, index) => {
+          return index !== index_to_delete;
+        }),
+      };
     });
   };
   const handleHeroUpdate = () => {
     updateHero.mutate(HeroInfo, {
-      onSuccess(data) {
-        void router.push("/");
-        console.log(data);
+      onSuccess() {
+        void refetch();
       },
       onError(error) {
         console.error(error);
@@ -119,24 +127,53 @@ const HeroPage: NextPage = () => {
             )}
           </div>
         ))}
+        {edit ? (
+          <>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1}
+              stroke="currentColor"
+              className="flex h-24 w-24 animate-pulse self-center fill-success hover:cursor-pointer"
+              onClick={() =>
+                (
+                  document.getElementById("my_modal_2") as HTMLDialogElement
+                )?.showModal()
+              }
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <dialog id="my_modal_2" className="modal">
+              <div className="modal-box">
+                <h3 className="text-lg font-bold">Add image!</h3>
+                <div className="join">
+                  <input
+                    className="join-item"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.currentTarget.value)}
+                  />
+                  <button
+                    className="btn btn-success join-item"
+                    onClick={() => handleAddImage(imageUrl)}
+                  >
+                    Submit
+                  </button>
+                </div>
+                <p className="py-4">Press ESC key or click outside to close</p>
+              </div>
+              <form method="dialog" className="modal-backdrop">
+                <button>close</button>
+              </form>
+            </dialog>
+          </>
+        ) : null}
       </div>
-      {edit ? (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1}
-          stroke="currentColor"
-          className="h-24 w-24 animate-pulse fill-success hover:cursor-pointer"
-          onClick={() => handleAddImage}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      ) : null}
+
       <div className="flex w-full flex-col items-center">
         {edit ? (
           <div className="card mt-4 w-96 bg-base-100">
@@ -162,7 +199,6 @@ const HeroPage: NextPage = () => {
                   className="input input-bordered input-secondary w-full max-w-xs"
                   value={HeroInfo.real_name}
                 />
-                {/* {HeroInfo.real_name} */}
               </p>
               <p>
                 <b>Hero catch phrase: </b>
@@ -205,7 +241,10 @@ const HeroPage: NextPage = () => {
               <button
                 type="submit"
                 className="btn btn-primary"
-                onClick={() => handleHeroUpdate()}
+                onClick={() => {
+                  setEdit(false);
+                  handleHeroUpdate();
+                }}
               >
                 Save Changes!
               </button>
@@ -214,6 +253,7 @@ const HeroPage: NextPage = () => {
                 onClick={() => {
                   setHeroInfo(data ?? HeroInfo);
                   setEdit(false);
+                  void refetch();
                 }}
               >
                 Cancel

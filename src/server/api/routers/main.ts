@@ -85,8 +85,8 @@ export const mainRouter = createTRPCRouter({
           },
         });
 
-        const powerToDelete = superPowersOfHero.filter((image) =>
-          superpowers.every((item) => image.description !== item.description),
+        const powerToDelete = superPowersOfHero.filter((power) =>
+          superpowers.every((otherPower) => power.description !== otherPower.description),
         );
 
         const powerToInsert = superpowers.filter((image) =>
@@ -94,6 +94,10 @@ export const mainRouter = createTRPCRouter({
             (item) => image.description !== item.description,
           ),
         );
+
+        console.log(superPowersOfHero.length);
+        console.log(powerToDelete.length);
+        console.log(superpowers.length);
 
         for (const power of powerToDelete) {
           await ctx.db.superpower.delete({
