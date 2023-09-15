@@ -11,6 +11,7 @@ const HeroPage: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
   const updateHero = api.main.updateHero.useMutation();
+  const [isDeleted, setIsDeleted] = useState<number | null>(null);
   const [edit, setEdit] = useState(false);
   const { data, isFetched, refetch } = api.main.getHeroById.useQuery(
     parseInt(id as string),
@@ -71,14 +72,18 @@ const HeroPage: NextPage = () => {
     });
   };
   const handleDeleteImage = (index_to_delete: number) => {
-    setHeroInfo((prev) => {
-      return {
-        ...prev,
-        images: HeroInfo.images.filter((image, index) => {
-          return index !== index_to_delete;
-        }),
-      };
-    });
+    setIsDeleted(index_to_delete);
+    setTimeout(() => {
+      setHeroInfo((prev) => {
+        return {
+          ...prev,
+          images: HeroInfo.images.filter((image, index) => {
+            return index !== index_to_delete;
+          }),
+        };
+      });
+      setIsDeleted(null);
+    }, 500);
   };
   const handleHeroUpdate = () => {
     updateHero.mutate(HeroInfo, {
@@ -96,10 +101,11 @@ const HeroPage: NextPage = () => {
         {HeroInfo.images.map((image, index) => (
           <div className="carousel-item" key={image.id}>
             <div
-              className="card indicator w-96 bg-base-300 shadow-xl "
+              className={`card indicator w-96 bg-base-300 shadow-xl ${
+                isDeleted === index ? "fadeOut" : ""
+              }`}
               key={image.id}
             >
-              {/* <span className="indicator-item badge badge-secondary"></span> */}
               <figure>
                 <Image
                   height={250}

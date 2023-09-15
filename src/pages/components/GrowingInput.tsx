@@ -7,7 +7,8 @@ type Props = {
 };
 const GrowingInput: FC<Props> = ({ defaultValues, changeHeroSupers }) => {
   const [inputs, setInputs] = useState<string[]>(defaultValues ?? []);
-
+  const [fadeOut, setFadeOut] = useState<number | null>(null);
+  const [fadeIn, setFadeIn] = useState<number | null>(null);
   const handleChange = (index: number, e: ChangeEvent<HTMLInputElement>) => {
     const newInputs = [...inputs];
     newInputs[index] = e.currentTarget.value;
@@ -15,19 +16,33 @@ const GrowingInput: FC<Props> = ({ defaultValues, changeHeroSupers }) => {
     changeHeroSupers(newInputs);
   };
   const handleAdd = (index: number) => {
+    setFadeIn(index);
     const newInputs = addItem(inputs, index);
     setInputs(newInputs);
-    changeHeroSupers(newInputs);
+      changeHeroSupers(newInputs);
+    setTimeout(() => {
+      
+      setFadeIn(null);
+    }, 1500);
   };
   const handleDetele = (index: number) => {
+    setFadeOut(index);
     const newInputs = deleteItem(inputs, index);
-    setInputs(newInputs);
-    changeHeroSupers(newInputs);
+    setTimeout(() => {
+      setInputs(newInputs);
+      changeHeroSupers(newInputs);
+      setFadeOut(null);
+    }, 1500);
   };
   return (
     <>
       {inputs.map((item, index) => (
-        <div className="join" key={index}>
+        <div
+          className={`join ${fadeOut === index ? "move-and-fade-out" : ""} ${
+            fadeIn === index ? "move-and-fade-in" : ""
+          }`}
+          key={index}
+        >
           <input
             className="input join-item input-secondary"
             value={item}

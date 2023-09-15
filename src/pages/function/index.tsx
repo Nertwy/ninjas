@@ -14,3 +14,5 @@ export const deleteItem = (arr: string[], index: number) => {
   newArr.splice(index, 1);
   return newArr;
 };
+
+

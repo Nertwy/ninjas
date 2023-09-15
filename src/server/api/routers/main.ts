@@ -86,7 +86,9 @@ export const mainRouter = createTRPCRouter({
         });
 
         const powerToDelete = superPowersOfHero.filter((power) =>
-          superpowers.every((otherPower) => power.description !== otherPower.description),
+          superpowers.every(
+            (otherPower) => power.description !== otherPower.description,
+          ),
         );
 
         const powerToInsert = superpowers.filter((image) =>
@@ -94,7 +96,6 @@ export const mainRouter = createTRPCRouter({
             (item) => image.description !== item.description,
           ),
         );
-
 
         for (const power of powerToDelete) {
           await ctx.db.superpower.delete({
@@ -221,5 +222,32 @@ export const mainRouter = createTRPCRouter({
         },
       });
     }),
+  insertHero: publicProcedure
+    .input(superheroSchema)
+    .mutation(async ({ ctx, input }) => {
+      const createdHero = await ctx.db.superhero.create({
+        data: {
+          nickname: input.nickname,
+          real_name: input.real_name,
+          catch_phrase: input.catch_phrase,
+          origin_description: input.origin_description,
+        },
+      });
+      for (const image of input.images) {
+        await ctx.db.image.create({
+          data: {
+            url: image.url,
+            superheroId: createdHero.id,
+          },
+        });
+      }
+      for (const superpower of input.superpowers) {
+        await ctx.db.superpower.create({
+          data: {
+            description: superpower.description,
+            superheroId: createdHero.id,
+          },
+        });
+      }
+    }),
 });
-
