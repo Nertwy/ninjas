@@ -1,4 +1,5 @@
-import { useState, type FC, type ChangeEvent} from "react";
+import { useState, type FC, type ChangeEvent } from "react";
+import { addItem, deleteItem } from "../function";
 
 type Props = {
   changeHeroSupers: (supers: string[]) => void;
@@ -14,14 +15,12 @@ const GrowingInput: FC<Props> = ({ defaultValues, changeHeroSupers }) => {
     changeHeroSupers(newInputs);
   };
   const handleAdd = (index: number) => {
-    const newInputs = [...inputs];
-    newInputs.splice(index + 1, 0, "");
+    const newInputs = addItem(inputs, index);
     setInputs(newInputs);
     changeHeroSupers(newInputs);
   };
   const handleDetele = (index: number) => {
-    const newInputs = [...inputs];
-    newInputs.splice(index, 1);
+    const newInputs = deleteItem(inputs, index);
     setInputs(newInputs);
     changeHeroSupers(newInputs);
   };

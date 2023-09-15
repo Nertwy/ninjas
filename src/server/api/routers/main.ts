@@ -95,9 +95,6 @@ export const mainRouter = createTRPCRouter({
           ),
         );
 
-        console.log(superPowersOfHero.length);
-        console.log(powerToDelete.length);
-        console.log(superpowers.length);
 
         for (const power of powerToDelete) {
           await ctx.db.superpower.delete({
@@ -225,3 +222,4 @@ export const mainRouter = createTRPCRouter({
       });
     }),
 });
+
