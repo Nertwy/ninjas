@@ -1,4 +1,4 @@
-import { addItem, deleteItem } from "../function/index";
+import { addItem, deleteItem } from "../../../../function/index";
 
 describe("addItem", () => {
   it("should add an item to the array at the specified index", () => {

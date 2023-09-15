@@ -1,5 +1,5 @@
 import { useState, type FC, type ChangeEvent } from "react";
-import { addItem, deleteItem } from "../function";
+import { addItem, deleteItem } from "../../function";
 
 type Props = {
   changeHeroSupers?: (supers: string[]) => void;

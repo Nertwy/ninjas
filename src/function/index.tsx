@@ -1,4 +1,3 @@
-import { type ChangeHandler } from "types";
 
 export const addItem = (arr: string[], index: number) => {
   const newArr = [...arr];
