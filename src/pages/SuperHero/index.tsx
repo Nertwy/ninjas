@@ -2,14 +2,14 @@ import { type FullHero } from "types";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { type ChangeEvent, useEffect, useState } from "react";
 import OnNoEdit from "./OnNoEdit";
 import { type NextPage } from "next";
+import GrowingInput from "../components/GrowingInput";
 
 const HeroPage: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
-
   const [HeroInfo, setHeroInfo] = useState<FullHero>({
     id: 0,
     catch_phrase: "",
@@ -19,6 +19,7 @@ const HeroPage: NextPage = () => {
     real_name: "",
     superpowers: [],
   });
+  const updateHero = api.main.updateHero.useMutation();
   const [edit, setEdit] = useState(false);
   const { data, isFetched } = api.main.getHeroById.useQuery(
     parseInt(id as string),
@@ -26,16 +27,27 @@ const HeroPage: NextPage = () => {
   useEffect(() => {
     setHeroInfo((prev) => data ?? prev);
   }, [isFetched]);
+
   const deleteHero = api.main.deleteSuperhero.useMutation();
   const handleDelete = (id: number) => {
     deleteHero.mutate(id, {
-      onError(error, variables, context) {
+      onError(error) {
         console.error(error);
       },
-      onSuccess(data, variables, context) {
+      onSuccess() {
         console.log("Success on deleting!");
         void router.push("/");
       },
+    });
+  };
+  const handleSuperChange = (superpowers: string[]) => {
+    setHeroInfo((prev) => {
+      return {
+        ...prev,
+        superpowers: superpowers.map((item) => {
+          return { description: item, superheroId: prev.id, id: -1 };
+        }),
+      };
     });
   };
   const handleChange = (
@@ -57,6 +69,17 @@ const HeroPage: NextPage = () => {
       images: HeroInfo.images.filter((image, index) => {
         return index !== index_to_delete;
       }),
+    });
+  };
+  const handleHeroUpdate = () => {
+    updateHero.mutate(HeroInfo, {
+      onSuccess(data) {
+        void router.push("/");
+        console.log(data);
+      },
+      onError(error) {
+        console.error(error);
+      },
     });
   };
   return (
@@ -164,11 +187,12 @@ const HeroPage: NextPage = () => {
               </p>
               <p>
                 <b>Hero SuperPowers: </b>
-                {HeroInfo.superpowers
-                  .map((superpower) => {
-                    return superpower.description;
-                  })
-                  .join(", ")}
+                <GrowingInput
+                  changeHeroSupers={handleSuperChange}
+                  defaultValues={HeroInfo.superpowers.map(
+                    (item) => item.description,
+                  )}
+                />
               </p>
             </div>
           </div>
@@ -178,7 +202,13 @@ const HeroPage: NextPage = () => {
         <div className="flex pt-4">
           {edit ? (
             <div className="flex">
-              <button className="btn btn-primary">Save Changes!</button>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                onClick={() => handleHeroUpdate()}
+              >
+                Save Changes!
+              </button>
               <button
                 className="btn btn-primary"
                 onClick={() => {

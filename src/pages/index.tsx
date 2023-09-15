@@ -1,21 +1,19 @@
-import Head from "next/head";
 import Image from "next/image";
-import Link from "next/link";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { useState } from "react";
 import { api } from "~/utils/api";
 
 import Pagination from "./components/Pagination";
 import { useRouter } from "next/router";
 
 export default function Home() {
-  const { data, isFetched } = api.main.getSuperhero.useQuery(undefined, {
-    refetchInterval: false,
-  });
+  const { data, isFetched,refetch } = api.main.getSuperhero.useQuery();
   const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
   if (!data)
     return <span className="loading loading-spinner loading-lg"></span>;
   const filteredData = data;
+  console.log(data.length-1);
+  
   return (
     <div className="flex h-screen flex-col items-center justify-center">
       <div className="flex flex-row">
@@ -34,8 +32,8 @@ export default function Home() {
               <Image
                 height={250}
                 width={250}
-                src={item.images ? item.images[3]?.url ?? "" : ""}
-                alt="Shoes"
+                src={item.images ? item.images[item.images.length-1]?.url ?? "" : ""}
+                alt="SuperHero"
                 sizes="100vw"
                 className="h-auto w-full"
               />

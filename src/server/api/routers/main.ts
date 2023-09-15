@@ -7,9 +7,6 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 const superpowerSchema = z.object({
   id: z.number(),
   description: z.string(),
-  superhero: z.object({
-    id: z.number(),
-  }),
   superheroId: z.number(),
 });
 
@@ -17,9 +14,6 @@ const superpowerSchema = z.object({
 const imageSchema = z.object({
   id: z.number(),
   url: z.string(),
-  superhero: z.object({
-    id: z.number(),
-  }),
   superheroId: z.number(),
 });
 
@@ -38,36 +32,89 @@ export const mainRouter = createTRPCRouter({
   updateHero: publicProcedure
     .input(superheroSchema)
     .mutation(async ({ ctx, input }) => {
-      const result = await ctx.db.superhero.update({
-        where: {
-          id: input.id,
-        },
-        include: {
-          images: true,
-          superpowers: true,
-        },
-        data: {
-          nickname: input.nickname,
-          origin_description: input.origin_description,
-          catch_phrase: input.catch_phrase,
-          real_name: input.real_name,
-          //!hardcoded
-          images: {
-            updateMany: input.images.map((image) => ({
-              where: { id: image.id },
-              data: image.url,
-            })),
+      const { images, superpowers } = input;
+      try {
+        const result = await ctx.db.superhero.update({
+          where: {
+            id: input.id,
           },
-          //!hardcoded
-          superpowers: {
-            updateMany: input.superpowers.map((superpower) => ({
-              data: superpower,
-              where: { id: superpower.id },
-            })),
+          include: {
+            images: true,
+            superpowers: true,
           },
-        },
-      });
-      return result;
+          data: {
+            nickname: input.nickname,
+            origin_description: input.origin_description,
+            catch_phrase: input.catch_phrase,
+            real_name: input.real_name,
+          },
+        });
+
+        const imagesOfHero = await ctx.db.image.findMany({
+          where: {
+            superheroId: input.id,
+          },
+        });
+        const imagesToDelete = imagesOfHero.filter((image) =>
+          images.every((item) => image.url !== item.url),
+        );
+
+        const imagesToInsert = images.filter((image) =>
+          imagesOfHero.every((item) => image.url !== item.url),
+        );
+
+        for (const imageToDelete of imagesToDelete) {
+          await ctx.db.image.delete({
+            where: { id: imageToDelete.id },
+          });
+        }
+
+        // Insert new images from the updated array that are not in the database
+        for (const urlToInsert of imagesToInsert) {
+          await ctx.db.image.create({
+            data: {
+              superheroId: urlToInsert.superheroId,
+              url: urlToInsert.url,
+            },
+          });
+        }
+
+        const superPowersOfHero = await ctx.db.superpower.findMany({
+          where: {
+            superheroId: input.id,
+          },
+        });
+
+        const powerToDelete = superPowersOfHero.filter((image) =>
+          superpowers.every((item) => image.description !== item.description),
+        );
+
+        const powerToInsert = superpowers.filter((image) =>
+          superPowersOfHero.every(
+            (item) => image.description !== item.description,
+          ),
+        );
+
+        for (const power of powerToDelete) {
+          await ctx.db.superpower.delete({
+            where: { id: power.id },
+          });
+        }
+
+        // Insert new images from the updated array that are not in the database
+        for (const power of powerToInsert) {
+          await ctx.db.superpower.create({
+            data: {
+              superheroId: power.superheroId,
+              description: power.description,
+            },
+          });
+        }
+        return result;
+      } catch (error) {
+        console.error(error);
+        console.error("Something wrong with Update");
+      }
     }),
   createSuperhero: publicProcedure
     .input(superheroSchema)
@@ -154,6 +201,9 @@ export const mainRouter = createTRPCRouter({
   getSuperhero: publicProcedure.query(async ({ ctx }) => {
     const result = await ctx.db.superhero.findMany({
       include: { images: true, superpowers: true },
+      orderBy: {
+        id: "asc",
+      },
     });
     return result;
   }),
