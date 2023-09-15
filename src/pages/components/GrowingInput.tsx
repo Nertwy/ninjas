@@ -2,7 +2,7 @@ import { useState, type FC, type ChangeEvent } from "react";
 import { addItem, deleteItem } from "../function";
 
 type Props = {
-  changeHeroSupers: (supers: string[]) => void;
+  changeHeroSupers?: (supers: string[]) => void;
   defaultValues: string[];
 };
 const GrowingInput: FC<Props> = ({ defaultValues, changeHeroSupers }) => {
@@ -13,13 +13,13 @@ const GrowingInput: FC<Props> = ({ defaultValues, changeHeroSupers }) => {
     const newInputs = [...inputs];
     newInputs[index] = e.currentTarget.value;
     setInputs(newInputs);
-    changeHeroSupers(newInputs);
+    changeHeroSupers?.(newInputs);
   };
   const handleAdd = (index: number) => {
     setFadeIn(index);
     const newInputs = addItem(inputs, index);
     setInputs(newInputs);
-      changeHeroSupers(newInputs);
+      changeHeroSupers?.(newInputs);
     setTimeout(() => {
       
       setFadeIn(null);
@@ -30,7 +30,7 @@ const GrowingInput: FC<Props> = ({ defaultValues, changeHeroSupers }) => {
     const newInputs = deleteItem(inputs, index);
     setTimeout(() => {
       setInputs(newInputs);
-      changeHeroSupers(newInputs);
+      changeHeroSupers?.(newInputs);
       setFadeOut(null);
     }, 1500);
   };
