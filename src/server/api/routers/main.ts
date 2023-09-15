@@ -28,6 +28,27 @@ const superheroSchema = z.object({
   images: z.array(imageSchema), // Use the Image schema for the array
 });
 
+const heroSchema = z.object({
+  catch_phrase: z.string().default(""),
+  nickname: z.string().default(""),
+  real_name: z.string().default(""),
+  images: z
+    .array(
+      z.object({
+        url: z.string().default(""),
+      }),
+    )
+    .default([{ url: "" }]),
+  origin_description: z.string().default(""),
+  superpowers: z
+    .array(
+      z.object({
+        description: z.string().default(""),
+      }),
+    )
+    .default([{ description: "-" }]),
+});
+
 export const mainRouter = createTRPCRouter({
   updateHero: publicProcedure
     .input(superheroSchema)
@@ -223,7 +244,7 @@ export const mainRouter = createTRPCRouter({
       });
     }),
   insertHero: publicProcedure
-    .input(superheroSchema)
+    .input(heroSchema)
     .mutation(async ({ ctx, input }) => {
       const createdHero = await ctx.db.superhero.create({
         data: {

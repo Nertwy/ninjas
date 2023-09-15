@@ -19,9 +19,8 @@ const GrowingInput: FC<Props> = ({ defaultValues, changeHeroSupers }) => {
     setFadeIn(index);
     const newInputs = addItem(inputs, index);
     setInputs(newInputs);
-      changeHeroSupers?.(newInputs);
+    changeHeroSupers?.(newInputs);
     setTimeout(() => {
-      
       setFadeIn(null);
     }, 1500);
   };
@@ -44,11 +43,13 @@ const GrowingInput: FC<Props> = ({ defaultValues, changeHeroSupers }) => {
           key={index}
         >
           <input
+            placeholder="SuperPower"
             className="input join-item input-secondary"
             value={item}
             onChange={(e) => handleChange(index, e)}
           />
           <button
+            type="button"
             name="add"
             className="btn join-item"
             onClick={() => handleAdd(index)}
@@ -72,6 +73,7 @@ const GrowingInput: FC<Props> = ({ defaultValues, changeHeroSupers }) => {
             name="delete"
             className="btn join-item"
             onClick={() => handleDetele(index)}
+            type="button"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

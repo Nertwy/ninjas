@@ -5,7 +5,7 @@ import Pagination from "./components/Pagination";
 import { useRouter } from "next/router";
 
 export default function Home() {
-  const { data, isFetched, refetch } = api.main.getSuperhero.useQuery();
+  const { data } = api.main.getSuperhero.useQuery();
   const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
   if (!data)
@@ -48,7 +48,12 @@ export default function Home() {
         ))}
       </div>
       <div className="flex flex-col">
-        <button className="btn btn-primary">Add Hero!</button>
+        <button
+          className="btn btn-primary"
+          onClick={() => void router.push("CreateHero")}
+        >
+          Add Hero!
+        </button>
         <div className="flex flex-row">
           <Pagination
             currentPage={currentPage}

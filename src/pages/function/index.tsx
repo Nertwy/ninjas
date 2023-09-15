@@ -1,3 +1,5 @@
+import { type ChangeHandler } from "types";
+
 export const addItem = (arr: string[], index: number) => {
   const newArr = [...arr];
   if (index === -1 || index >= newArr.length) {
@@ -14,5 +16,3 @@ export const deleteItem = (arr: string[], index: number) => {
   newArr.splice(index, 1);
   return newArr;
 };
-
-

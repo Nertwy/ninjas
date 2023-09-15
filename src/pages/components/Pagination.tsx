@@ -1,6 +1,5 @@
 import React from "react";
 
-
 type PaginationProps = {
   currentPage: number;
   totalPages: number;
@@ -68,10 +67,12 @@ const renderPageLinks = (
 
   if (startPage > firstPage) {
     pageLinks.push(
-      <li key="first" className="btn join-item">
-        <button className="page-link" onClick={() => onPageChange(firstPage)}>
-          {firstPage}
-        </button>
+      <li
+        key="first"
+        className="btn join-item"
+        onClick={() => onPageChange(firstPage)}
+      >
+        <button className="page-link">{firstPage}</button>
       </li>,
     );
     if (startPage > firstPage + 1) {
