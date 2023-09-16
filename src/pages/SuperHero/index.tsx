@@ -6,6 +6,7 @@ import { type ChangeEvent, useEffect, useState } from "react";
 import OnNoEdit from "./OnNoEdit";
 import { type NextPage } from "next";
 import GrowingInput from "../components/GrowingInput";
+import { checkImageAndAllowed } from "~/function";
 
 const HeroPage: NextPage = () => {
   const router = useRouter();
@@ -27,6 +28,7 @@ const HeroPage: NextPage = () => {
       superpowers: [],
     },
   );
+  const [validUrl, setValidUrl] = useState(true);
   const [imageUrl, setImageUrl] = useState<string>("");
   useEffect(() => {
     setHeroInfo((prev) => data ?? prev);
@@ -159,12 +161,18 @@ const HeroPage: NextPage = () => {
                 <h3 className="text-lg font-bold">Add image!</h3>
                 <div className="join">
                   <input
-                    className="join-item"
+                    className={`input join-item ${
+                      validUrl ? "input-success" : "input-error"
+                    }`}
                     value={imageUrl}
-                    onChange={(e) => setImageUrl(e.currentTarget.value)}
+                    onChange={(e) => {
+                      setImageUrl(e.currentTarget.value);
+                      const isValid = checkImageAndAllowed(e.target.value);
+                      setValidUrl(isValid);
+                    }}
                   />
                   <button
-                    className="btn btn-success join-item"
+                    className={`btn btn-success join-item ${validUrl ? "" : "btn-disabled"}`}
                     onClick={() => handleAddImage(imageUrl)}
                   >
                     Submit
