@@ -71,7 +71,7 @@ const GrowingInput: FC<Props> = ({ defaultValues, changeHeroSupers }) => {
           </button>
           <button
             name="delete"
-            className="btn join-item"
+            className={`btn join-item ${inputs.length === 1 ? "btn-disabled" : ""}`}
             onClick={() => handleDetele(index)}
             type="button"
           >

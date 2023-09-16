@@ -27,6 +27,6 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 
 ## Assumptions
 1. You have different server to handle and store images, DB stores only URLS!
-2. In next config you can see wich urls are supported
+2. IMPORTANT! - In next config you can see wich urls are supported
 3. Images and superpowers are a different connected tables
 

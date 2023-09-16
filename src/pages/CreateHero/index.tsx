@@ -1,10 +1,16 @@
-import { type ChangeEvent, useState, FormEvent } from "react";
+import { type ChangeEvent, useState, type FormEvent } from "react";
 import GrowingInput from "../components/GrowingInput";
-import { type UrlPattern, type ClientFullHero } from "types";
+import { type ClientFullHero } from "types";
 import { api } from "~/utils/api";
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
+import { checkImageAndAllowed} from "~/function";
+
 
 const CreateHero = () => {
+  const [validUrl, setValidUrl] = useState(true);
   const createHero = api.main.insertHero.useMutation();
+  const router = useRouter();
   const [hero, setHero] = useState<ClientFullHero>({
     catch_phrase: "",
     nickname: "",
@@ -34,26 +40,41 @@ const CreateHero = () => {
   };
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    createHero.mutate(hero, {
-      onSuccess() {
-        console.log("Everithing Worked Properly!");
-      },
-      onError(error) {
-        console.error(error);
-      },
-    });
+    if (validUrl) {
+      createHero.mutate(hero, {
+        onSuccess() {
+          console.log("Everithing Worked Properly!");
+          toast.success("Hero created successfully! Redirecting...", {
+            autoClose: 3000,
+          });
+          setTimeout(() => {
+            void router.push("/");
+          }, 3000);
+        },
+        onError(error) {
+          console.error(error);
+        },
+      });
+    } else {
+      toast.error("Invalid Url!");
+    }
   };
   const handleImage = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.currentTarget.value === "") return;
     setHero((prev) => {
-      return { ...prev, images: [{ url: e.currentTarget.value }] };
+      return { ...prev, images: [{ url: e.target.value }] };
     });
+    if (e.target.value) {
+      const isValid = checkImageAndAllowed(e.target.value);
+      setValidUrl(isValid);
+    }
   };
   return (
-    <form className="h-screen" onSubmit={(e) => handleSubmit(e)}>
-      <div className="flex flex-col items-center gap-5">
+    <form className="flex h-screen items-center justify-center" onSubmit={(e) => handleSubmit(e)}>
+      <div className="flex flex-col items-center gap-5 card bg-base-300 shadow-xl p-5 shadow-zinc-800">
         <input
-          className="input input-secondary"
+          value={hero.images[0]?.url}
+          type="text"
+          className={`input ${validUrl ? "input-success" : "input-error"}`}
           placeholder="Image URL"
           onChange={(e) => handleImage(e)}
         />

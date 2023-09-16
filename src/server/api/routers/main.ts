@@ -170,57 +170,7 @@ export const mainRouter = createTRPCRouter({
         },
       });
     }),
-  seed: publicProcedure.mutation(async ({ ctx }) => {
-    const superman = await ctx.db.superhero.create({
-      data: {
-        nickname: "Superman",
-        real_name: "Clark Kent",
-        origin_description: "Krypton",
-        catch_phrase: "Truth, justice, and the American way",
-      },
-    });
 
-    const batman = await ctx.db.superhero.create({
-      data: {
-        nickname: "Batman",
-        real_name: "Bruce Wayne",
-        origin_description: "Gotham City",
-        catch_phrase: "I am vengeance, I am the night",
-      },
-    });
-
-    // Create superpowers
-    await ctx.db.superpower.createMany({
-      data: [
-        {
-          description: "Super strength",
-          superheroId: superman.id,
-        },
-        {
-          description: "Flight",
-          superheroId: superman.id,
-        },
-        {
-          description: "Rich and intelligent",
-          superheroId: batman.id,
-        },
-      ],
-    });
-
-    // Create images
-    await ctx.db.image.createMany({
-      data: [
-        {
-          url: "https://example.com/superman.jpg",
-          superheroId: superman.id,
-        },
-        {
-          url: "https://example.com/batman.jpg",
-          superheroId: batman.id,
-        },
-      ],
-    });
-  }),
   getSuperhero: publicProcedure.query(async ({ ctx }) => {
     const result = await ctx.db.superhero.findMany({
       include: { images: true, superpowers: true },
