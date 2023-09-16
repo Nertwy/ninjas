@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { checkImageAndAllowed } from "~/function";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
@@ -55,6 +56,9 @@ export const mainRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { images, superpowers } = input;
       try {
+        if (!input.images.every((item) => checkImageAndAllowed(item.url)))
+          throw new Error("Url Is not walid!");
+
         const result = await ctx.db.superhero.update({
           where: {
             id: input.id,

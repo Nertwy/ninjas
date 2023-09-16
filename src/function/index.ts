@@ -34,7 +34,6 @@ export const isUrlAllowed = (url: string) => {
       port: "",
     },
   ];
-
   // Check if the URL matches any of the allowed patterns
   return allowedPatterns.some((pattern) => {
     const patternUrl = `${pattern.protocol}://${pattern.hostname}${pattern.pathname}`;

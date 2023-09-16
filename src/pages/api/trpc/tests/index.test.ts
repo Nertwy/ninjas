@@ -1,4 +1,4 @@
-import { addItem, deleteItem } from "../../../../function/index";
+import { addItem, deleteItem, isImage } from "../../../../function/index";
 
 describe("addItem", () => {
   it("should add an item to the array at the specified index", () => {
@@ -43,4 +43,16 @@ describe("deleteItem", () => {
   });
 });
 
+describe("Test isImage function", () => {
+  it("should return true for a valid image URL", () => {
+    const url = "https://example.com/image.jpg";
+    const result = isImage(url);
+    expect(result).toBe(true);
+  });
 
+  it("should return false for an invalid URL", () => {
+    const url = "https://example.com/document.pdf";
+    const result = isImage(url);
+    expect(result).toBe(false);
+  });
+});
