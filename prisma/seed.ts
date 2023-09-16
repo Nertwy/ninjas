@@ -7,20 +7,21 @@ type clientHero = Omit<Superhero, "id"> & {
     superheroId: number | undefined;
   }[];
 };
+
 const prisma = new PrismaClient({
-  datasources:{
-    db:{
-      url:process.env.DATABASE_URL
-    }
-  }
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
 });
 const main = async () => {
   try {
     const data = await fetch(
-      "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/all.json"
+      "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/all.json",
     );
     const result = await data.json();
-    result.forEach(async (item) => {
+    result.forEach(async (item:any) => {
       const superpower: string[] = [];
       const urls: string[] = Object.values(item.images);
       for (const [key, value] of Object.entries(item.powerstats)) {
@@ -63,4 +64,4 @@ const main = async () => {
     console.error(error);
   }
 };
-main();
+main().catch((error) => console.error(error));
