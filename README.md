@@ -24,3 +24,9 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 - npx prisma db push (To create a db)
 - pnpm run seed (To push some seeded data)
 - pnpm run dev
+
+## Assumptions
+1. You have different server to handle and store images, DB stores only URLS!
+2. In next config you can see wich urls are supported
+3. Images and superpowers are a different connected tables
+
