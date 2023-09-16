@@ -17,7 +17,7 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 
 ## How To start a Project
 - git clone this [Repository](https://github.com/Nertwy/ninjas.git)
-- cd to cloned repo 
+- cd ninjas
 - Create .env file in the root
 - pnpm install
 - Declare DATABASE_URL with your initial PostgreSQL DB
