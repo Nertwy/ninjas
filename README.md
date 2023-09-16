@@ -16,7 +16,7 @@ To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the fo
 You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
 
 ## How To start a Project
-- git clone this [Repository](https://github.com/Nertwy/ninjas.git)
+- git clone https://github.com/Nertwy/ninjas.git
 - cd ninjas
 - Create .env file in the root
 - pnpm install
